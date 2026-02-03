@@ -1,0 +1,6 @@
+,Sampling1,Sampling2,Sampling3,Sampling4,Sampling5
+M1 (Logistic Regression),75.0,25.0,75.0,75.0,100.0
+M2 (Decision Tree),100.0,75.0,75.0,100.0,100.0
+M3 (Random Forest),25.0,50.0,75.0,25.0,100.0
+M4 (SVM),50.0,25.0,75.0,50.0,100.0
+M5 (Naive Bayes),25.0,0.0,75.0,25.0,100.0
