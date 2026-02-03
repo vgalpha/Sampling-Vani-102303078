@@ -13,9 +13,9 @@
 - [Sampling Techniques](#sampling-techniques)
 - [Machine Learning Models](#machine-learning-models)
 - [Results](#results)
-- [Analysis and Discussion](#analysis-and-discussion)
-- [How to Run](#how-to-run)
 - [Project Structure](#project-structure)
+- [How to Run](#how-to-run)
+
 
 ---
 
