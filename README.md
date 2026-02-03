@@ -442,56 +442,6 @@ Both Systematic and Stratified sampling techniques produced excellent results by
 
 **⭐ Winner:** M3 (Random Forest) + Sampling2 (Stratified) = **100.00%** accuracy
 
-
----
-
-## Analysis and Discussion
-
-### Key Findings
-
-Based on the experimental results with SMOTE-balanced dataset (200 samples):
-
-#### 1. Impact of Sampling Technique
-
-Different sampling techniques create different training datasets, which directly impact model performance:
-
-- **Simple Random Sampling (Sampling1):** Provides strong baseline with 85-96% accuracy across models
-- **Stratified Sampling (Sampling2):** Excellent performer - achieved 100% accuracy with Random Forest by maintaining perfect class balance
-- **Systematic Sampling (Sampling3):** Excellent results with 100% accuracy for both Random Forest and SVM, showing good coverage of data patterns
-- **Cluster Sampling (Sampling4):** Lower performance (74-89%) - grouping similar transactions may exclude important patterns
-- **Bootstrap Sampling (Sampling5):** Solid performance (89-96%) with Random Forest, showing good variance reduction
-
-#### 2. Model-Specific Behavior
-
-**M1 (Logistic Regression):**
-- Accuracy range: 81.48% - 96.30%
-- Best with Systematic sampling (96.30%)
-- Shows moderate sensitivity to sampling technique
-- Performed well across most techniques, proving stable and reliable
-
-**M2 (Decision Tree):**
-- Accuracy range: 74.07% - 96.30%
-- Best with Stratified sampling (96.30%)
-- Highest variance across sampling techniques (22% difference)
-- Cluster sampling showed significant drop (74.07%), indicating sensitivity to sample composition
-
-**M3 (Random Forest):**
-- Accuracy range: 88.89% - 100.00%
-- **Top performer overall** - achieved 100% with both Stratified and Systematic sampling
-- Most consistent performance across all sampling techniques
-- Ensemble approach reduces variance and improves generalization
-
-**M4 (SVM):**
-- Accuracy range: 88.89% - 100.00%
-- Achieved perfect 100% with Systematic sampling
-- Strong performance with Simple Random (96.30%) and Stratified (96.30%)
-- Demonstrates good robustness when given quality samples
-
-**M5 (Naive Bayes):**
-- Accuracy range: 62.96% - 81.48%
-- Lowest performer overall
-- Simple Random sampling showed poorest result (62.96%)
-- Independence assumption may not hold well for fraud detection features
 ---
 
 ## Project Structure
