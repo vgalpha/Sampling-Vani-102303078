@@ -1,7 +1,7 @@
 # Sampling Assignment - Credit Card Fraud Detection
 
-**Author:** [Your Name]  
-**Roll No:** [Your Roll Number]  
+**Author:** Vani Goyal  
+**Roll No:** 102303078  
 **Course:** UCS654 - Predictive Analytics Using Statistics
 
 ---
