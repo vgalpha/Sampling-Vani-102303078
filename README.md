@@ -1,14 +1,29 @@
 # Sampling Assignment - Credit Card Fraud Detection
 
-**Author:** Vani Goyal
-**Roll No:** 102303078
-**Course:** UCS654
+**Author:** [Your Name]  
+**Roll No:** [Your Roll Number]  
+**Course:** UCS654 - Predictive Analytics Using Statistics
+
+---
+
+## Table of Contents
+- [Introduction](#introduction)
+- [Dataset Overview](#dataset-overview)
+- [Methodology](#methodology)
+- [Sampling Techniques](#sampling-techniques)
+- [Machine Learning Models](#machine-learning-models)
+- [Results](#results)
+- [Analysis and Discussion](#analysis-and-discussion)
+- [How to Run](#how-to-run)
+- [Project Structure](#project-structure)
+
+---
 
 ## Introduction
 
-### Understanding Imbalanced Datasets
+### What are Imbalanced Datasets?
 
-An imbalanced dataset is one where the distribution of classes is not equal. One class has significantly more samples than the other. For example, if you have 1000 transactions and only 10 are fraudulent, that's an imbalanced dataset with a 100:1 ratio.
+An **imbalanced dataset** is one where the distribution of classes is not equal. One class has significantly more samples than the other. For example, if you have 1000 transactions and only 10 are fraudulent, that's an imbalanced dataset with a 100:1 ratio.
 
 **Real-life examples where imbalanced datasets occur:**
 - **Fraud detection:** Most transactions are legitimate, very few are fraudulent
@@ -17,11 +32,11 @@ An imbalanced dataset is one where the distribution of classes is not equal. One
 - **Manufacturing defects:** Most products pass quality checks, few are defective
 - **Customer churn:** Most customers stay, only a small percentage leave
 
-The problem? If you train a model on imbalanced data, it can just predict the majority class every time and still get high accuracy. A model that says "no fraud" for every transaction would be 99% accurate but completely useless.
+**The Problem:** If you train a model on imbalanced data, it can just predict the majority class every time and still get high accuracy. A model that says "no fraud" for every transaction would be 99% accurate but completely useless for catching fraud.
 
 ### What is Sampling?
 
-Sampling is the process of selecting a subset of data from a larger dataset. Instead of using all available data, you pick a representative sample based on some technique or strategy.
+**Sampling** is the process of selecting a subset of data from a larger dataset. Instead of using all available data, you pick a representative sample based on some technique or strategy.
 
 **How sampling helps with imbalanced datasets:**
 - **Balancing:** You can undersample the majority class or oversample the minority class to create balance
@@ -31,263 +46,531 @@ Sampling is the process of selecting a subset of data from a larger dataset. Ins
 
 Different sampling techniques select data differently, and this selection strategy can significantly impact how well your model learns.
 
-### What This Project Does
+### Project Objective
 
-This project explores how different sampling techniques affect machine learning model performance. I worked with a credit card fraud detection dataset that's heavily imbalanced (85:1 ratio). Here's what I did:
+This project explores how different **sampling techniques** affect **machine learning model performance** on imbalanced credit card fraud data. The key questions we answer:
 
-1. Balanced the dataset using undersampling
-2. Applied five different sampling techniques to create five different samples
-3. Trained five different ML models on each sample
-4. Compared all 25 combinations to see which sampling technique works best with which model
+1. How do we balance a highly imbalanced dataset?
+2. Which sampling technique works best for which machine learning model?
+3. What is the optimal combination of sampling technique and model for fraud detection?
 
-The main question: Does the way we sample our data really matter? Spoiler: Yes, it matters a lot.
+---
 
 ## Dataset Overview
 
-The dataset comes from a credit card transaction database with 772 records. Here's what makes it challenging:
+The dataset comes from a credit card transaction database with the following characteristics:
 
-- **Total samples:** 772
-- **Legitimate transactions (Class 0):** 763 (98.8%)
-- **Fraudulent transactions (Class 1):** 9 (1.2%)
-- **Imbalance ratio:** About 85:1
+| Attribute | Value |
+|-----------|-------|
+| **Total Samples** | 772 |
+| **Legitimate Transactions (Class 0)** | 763 (98.83%) |
+| **Fraudulent Transactions (Class 1)** | 9 (1.17%) |
+| **Imbalance Ratio** | 84.8:1 |
+| **Features** | 30 (V1-V28, Time, Amount, Class) |
 
-The dataset has 30 features: V1-V28 (28 features), Time and Amount.
+**Challenge:** With only 9 fraud cases out of 772 transactions, this is a severely imbalanced dataset. A naive model that predicts "no fraud" for every transaction would achieve 98.83% accuracy while being completely useless.
 
-This kind of extreme imbalance is common in fraud detection. If you train a model on this as-is, it could just predict "legitimate" for everything and still be right 98.8% of the time - but completely useless for catching fraud.
+---
 
 ## Methodology
 
-### Step 1: Balancing the Dataset
+### Overview
 
-First, I needed to balance the dataset as per the assignment requirement. I used random undersampling - the simplest approach:
-
-- Minority class (Fraud): 9 samples
-- Majority class (Legitimate): 763 samples
-- **Solution:** Randomly picked 9 legitimate transactions to match the 9 fraudulent ones
-- **Result:** 18 samples total (9 fraud + 9 legitimate)
-
-Yes, this throws away a lot of data. But for this assignment, the goal was to create a balanced base dataset to then apply different sampling techniques on.
-
-### Step 2: Calculating Sample Size
-
-Using the standard statistical formula for sample size:
+The complete workflow consists of these steps:
 
 ```
-n = (Z² × p × (1-p)) / E²
+Step 1: Load imbalanced dataset (772 samples)
+   ↓
+Step 2: Balance the dataset
+   ↓
+Step 3: Create 5 samples using different sampling techniques
+   ↓
+Step 4: Train 5 ML models on each sample
+   ↓
+Step 5: Evaluate and compare 25 combinations
+```
+
+---
+
+### Step 1: Data Balancing
+
+To handle the severe class imbalance, this project uses **SMOTE (Synthetic Minority Over-sampling Technique)** to create a balanced dataset:
+
+#### **SMOTE Balancing Approach**
+
+**Method:**
+- Use **SMOTE** to generate synthetic fraud cases from the 9 original minority samples
+- Oversample minority class: 9 → 100 fraud cases
+- Balance majority class: 763 → 100 legitimate cases (randomly sampled)
+- **Result:** Balanced dataset with 200 samples (100 fraud + 100 legitimate)
+
+**How SMOTE Works:**
+
+SMOTE creates synthetic samples by:
+1. Finding k-nearest neighbors of minority class samples
+2. Randomly selecting one of these neighbors
+3. Creating a new sample along the line between the original and the neighbor
+
+This generates realistic fraud cases based on existing patterns, rather than simple duplication.
+
+---
+
+### Step 2: Sample Size Calculation
+
+Using **Cochran's formula** for sample size calculation:
+
+```
+n₀ = (Z² × p × (1-p)) / E²
 ```
 
 Where:
-- Z = 1.96 (for 95% confidence)
-- p = 0.5 (we have balanced data now)
-- E = 0.05 (5% margin of error)
+- **Z** = 1.96 (for 95% confidence level)
+- **p** = 0.5 (balanced dataset proportion)
+- **E** = 0.05 (5% margin of error)
 
-This gave me a sample size of **17** from my population of 18. So each sampling technique creates a sample of 17 records.
-
-### Step 3: Five Sampling Techniques
-
-Here's what each sampling technique does:
-
-**Sampling1 - Simple Random Sampling**
-
-Just randomly pick 17 samples from the 18 available. Every sample has an equal chance. Think of it like drawing names from a hat.
-
-```python
-sample = df.sample(n=17, random_state=42)
+**Finite Population Correction:**
+```
+n = n₀ / (1 + (n₀ - 1) / N)
 ```
 
-**Sampling2 - Stratified Sampling**
+Where N is the balanced population size.
 
-This tries to maintain the same class ratio as the original. Since we have 9:9 ratio, the sample should have roughly the same proportion. I ended up with 9 fraud cases and 8 legitimate ones.
+**Result:**
+- For N=200 (our SMOTE-balanced dataset): Sample size ≈ 132
 
-The idea: If your population has certain groups, your sample should represent those groups proportionally.
+Each of the five sampling techniques creates a sample of this calculated size from the balanced dataset.
 
-**Sampling3 - Systematic Sampling**
+---
 
-Pick every kth element. With 18 samples and needing 17, k=1 (every element). Started at a random position and then selected every 1st element systematically.
+## Sampling Techniques
 
-Example: If k=2, and you start at position 1, you'd pick positions 1, 3, 5, 7, 9...
+### Sampling1: Simple Random Sampling
 
-**Sampling4 - Cluster Sampling**
+**Method:** Randomly select samples from the balanced dataset without replacement.
 
-First, I grouped the data into clusters using K-Means (based on transaction features). Then randomly selected entire clusters until I had about 17 samples.
+**How it works:** Like drawing names from a hat - each sample has an equal probability of being selected.
 
-Think of it like: instead of picking individual students from a school, you pick entire classrooms.
+```python
+sample = df.sample(n=sample_size, random_state=42, replace=False)
+```
 
-For this small dataset, I used 6 clusters and selected 6 of them.
+**Characteristics:**
+- Unbiased
+- Easy to implement
+- Baseline for comparison
+- No special structure
 
-**Sampling5 - Bootstrap Sampling**
+**Use case:** General-purpose sampling when you have no prior knowledge about data structure.
 
-Sample with replacement - meaning the same transaction can appear multiple times. Drew 17 samples, but because of replacement, only 10 were unique.
+---
 
-This is the foundation of techniques like Random Forest. The duplicates actually help by emphasizing certain patterns.
+### Sampling2: Stratified Sampling
 
-### Step 4: Five Machine Learning Models
+**Method:** Maintain the same class proportions as the original balanced dataset.
 
-I chose five different types of models to get a diverse comparison:
+**How it works:** If the balanced dataset is 50% fraud and 50% legitimate, the sample maintains this exact ratio.
 
-**M1 - Logistic Regression**
-The classic linear classifier. Fast, simple, works great when classes are somewhat linearly separable.
+```python
+# Sample proportionally from each class
+fraud_sample = fraud_data.sample(n=n_fraud, random_state=42)
+legit_sample = legit_data.sample(n=n_legit, random_state=42)
+sample = pd.concat([fraud_sample, legit_sample])
+```
 
-**M2 - Decision Tree**
-Builds a tree of if-then rules. Easy to interpret and doesn't need feature scaling.
+**Characteristics:**
+- Preserves class distribution
+- Ensures minority class representation
+- Reduces sampling bias
+- Best for larger datasets
 
-**M3 - Random Forest**
-An ensemble of 100 decision trees. More robust than a single tree, less likely to overfit.
+**Use case:** When you want to ensure all classes are represented proportionally in your sample.
 
-**M4 - Support Vector Machine (SVM)**
-Tries to find the best boundary between classes. I used the RBF kernel which can handle non-linear patterns.
+---
 
-**M5 - Naive Bayes**
-A probabilistic model based on Bayes theorem. Fast and works well with small datasets.
+### Sampling3: Systematic Sampling
 
-### Step 5: Training and Evaluation
+**Method:** Select every k-th element after a random start.
 
-For each of the 25 combinations (5 samples × 5 models):
+**How it works:**
+1. Calculate interval k = Population_size / Sample_size
+2. Choose random starting point (0 to k-1)
+3. Select every k-th element thereafter
 
-1. Split the sample: 80% training, 20% testing (with stratification)
-2. Train the model
-3. Test and calculate accuracy
-4. Store the result
+```python
+k = population_size // sample_size
+start = random.randint(0, k)
+indices = range(start, population_size, k)
+sample = df.iloc[indices]
+```
+
+**Characteristics:**
+- Easy to implement
+- Provides good coverage
+- Deterministic after start point
+- Risk of periodicity bias
+
+**Use case:** When data is randomly ordered and you want evenly distributed samples.
+
+---
+
+### Sampling4: Cluster Sampling
+
+**Method:** Group data into clusters, then randomly select entire clusters.
+
+**How it works:**
+1. Use K-Means clustering to group similar transactions
+2. Randomly select entire clusters
+3. Include all samples from selected clusters
+
+```python
+# Create clusters using K-Means
+kmeans = KMeans(n_clusters=10, random_state=42)
+df['Cluster'] = kmeans.fit_predict(X)
+
+# Randomly select clusters
+selected_clusters = random.choice(clusters, size=n_clusters_needed)
+sample = df[df['Cluster'].isin(selected_clusters)]
+```
+
+**Characteristics:**
+- Captures natural groupings
+- Efficient for large datasets
+- May have higher variance
+- Good for geographically dispersed data
+
+**Use case:** When data has natural groupings and you want to capture group-level patterns.
+
+---
+
+### Sampling5: Bootstrap Sampling
+
+**Method:** Random sampling **with replacement** - same sample can appear multiple times.
+
+**How it works:** Draw samples randomly, but after each draw, the sample is "put back" so it can be drawn again.
+
+```python
+sample = df.sample(n=sample_size, random_state=42, replace=True)
+```
+
+**Characteristics:**
+- Allows duplicates
+- Foundation of ensemble methods
+- Reduces variance
+- Better for small datasets
+- Used internally by Random Forest
+
+**Use case:** When you want to estimate model stability or when working with small datasets.
+
+---
+
+## Machine Learning Models
+
+I selected five diverse models representing different learning paradigms:
+
+### M1: Logistic Regression
+**Type:** Linear, Probabilistic
+
+**How it works:** Finds a linear decision boundary to separate classes using the logistic function.
+
+**Characteristics:**
+- Fast training and prediction
+- Interpretable coefficients
+- Works well when classes are linearly separable
+- Requires feature scaling for best results
+
+**Parameters used:**
+```python
+LogisticRegression(max_iter=1000, random_state=42)
+```
+
+---
+
+### M2: Decision Tree
+**Type:** Tree-based, Non-parametric
+
+**How it works:** Builds a tree of if-then rules by recursively splitting data based on features.
+
+**Characteristics:**
+- Easy to interpret and visualize
+- Handles non-linear relationships
+- No feature scaling needed
+- Prone to overfitting if not constrained
+- High variance with different samples
+
+**Parameters used:**
+```python
+DecisionTreeClassifier(max_depth=10, random_state=42)
+```
+
+---
+
+### M3: Random Forest
+**Type:** Ensemble, Tree-based
+
+**How it works:** Creates multiple decision trees using bootstrap samples and averages their predictions.
+
+**Characteristics:**
+- More robust than single trees
+- Handles overfitting better
+- Internally uses bootstrap sampling
+- Feature importance available
+- Slower than single trees
+
+**Parameters used:**
+```python
+RandomForestClassifier(n_estimators=100, max_depth=10, random_state=42)
+```
+
+---
+
+### M4: Support Vector Machine (SVM)
+**Type:** Margin-based, Kernel
+
+**How it works:** Finds the optimal hyperplane that maximizes the margin between classes.
+
+**Characteristics:**
+- Effective in high-dimensional spaces
+- Works well with clear margin of separation
+- Memory efficient
+- Requires feature scaling
+- Sensitive to parameter tuning
+
+**Parameters used:**
+```python
+SVC(kernel='rbf', C=1.0, gamma='scale', random_state=42)
+```
+
+---
+
+### M5: Naive Bayes
+**Type:** Probabilistic, Generative
+
+**How it works:** Applies Bayes' theorem with "naive" independence assumptions between features.
+
+**Characteristics:**
+- Very fast training and prediction
+- Works well with small datasets
+- Assumes feature independence (rarely true)
+- Provides probability estimates
+- Less accurate but computationally efficient
+
+**Parameters used:**
+```python
+GaussianNB()
+```
+
+---
 
 ## Results
 
-Here's the accuracy matrix (in percentages):
+### Training & Evaluation Process
+
+For each of the **25 combinations** (5 sampling techniques × 5 models):
+
+1. **Split sample:** 80% training, 20% testing (stratified when possible)
+2. **Scale features:** Apply StandardScaler for SVM
+3. **Train model:** Fit on training set
+4. **Predict:** Make predictions on test set
+5. **Calculate accuracy:** Compare predictions with actual labels
+
+### Accuracy Matrix
+
+**Configuration Used:** SMOTE with 200 balanced samples (100 fraud + 100 legitimate)
 
 |                          | Sampling1 | Sampling2 | Sampling3 | Sampling4 | Sampling5 |
 |--------------------------|-----------|-----------|-----------|-----------|-----------|
-| M1 (Logistic Regression) | 75        | 25        | 75        | 75        | **100**   |
-| M2 (Decision Tree)       | **100**   | 75        | 75        | **100**   | **100**   |
-| M3 (Random Forest)       | 25        | 50        | 75        | 25        | **100**   |
-| M4 (SVM)                 | 50        | 25        | 75        | 50        | **100**   |
-| M5 (Naive Bayes)         | 25        | 0         | 75        | 25        | **100**   |
+| M1 (Logistic Regression) |   85.19%  |   88.89%  |   96.30%  |   81.48%  |   88.89%  |
+| M2 (Decision Tree)       |   88.89%  |   96.30%  |   92.59%  |   74.07%  |   92.59%  |
+| M3 (Random Forest)       |   96.30%  |  100.00%  |  100.00%  |   88.89%  |   96.30%  |
+| M4 (SVM)                 |   96.30%  |   96.30%  |  100.00%  |   88.89%  |   88.89%  |
+| M5 (Naive Bayes)         |   62.96%  |   81.48%  |   77.78%  |   81.48%  |   81.48%  |
 
-### What's the best sampling for each model?
+### Best Sampling Technique for Each Model
 
-- **Logistic Regression:** Sampling5 (100%)
-- **Decision Tree:** Sampling1 (100%) - though Sampling4 and 5 also got 100%
-- **Random Forest:** Sampling5 (100%)
-- **SVM:** Sampling5 (100%)
-- **Naive Bayes:** Sampling5 (100%)
+| Model | Best Sampling Technique | Accuracy |
+|-------|------------------------|----------|
+| M1 (Logistic Regression) | Sampling3 (Systematic) | 96.30% |
+| M2 (Decision Tree) | Sampling2 (Stratified) | 96.30% |
+| M3 (Random Forest) | Sampling2 (Stratified) / Sampling3 (Systematic) | 100.00% |
+| M4 (SVM) | Sampling3 (Systematic) | 100.00% |
+| M5 (Naive Bayes) | Sampling2 (Stratified) / Sampling4 (Cluster) / Sampling5 (Bootstrap) | 81.48% |
 
-Pattern? Sampling5 (Bootstrap) wins for almost everything.
+### Best Model for Each Sampling Technique
+
+| Sampling Technique | Best Model | Accuracy |
+|-------------------|------------|----------|
+| Sampling1 (Simple Random) | M3 (Random Forest) | 96.30% |
+| Sampling2 (Stratified) | M3 (Random Forest) | 100.00% |
+| Sampling3 (Systematic) | M3 (Random Forest) / M4 (SVM) | 100.00% |
+| Sampling4 (Cluster) | M3 (Random Forest) | 88.89% |
+| Sampling5 (Bootstrap) | M3 (Random Forest) | 96.30% |
+
+### Best Model Overall
+
+**🏆 M3 (Random Forest)**
+
+| Metric | Value |
+|--------|-------|
+| Average Accuracy | 96.30% |
+| Accuracy Range | 88.89% - 100.00% |
+| Peak Performance | 100.00% (Sampling2 & Sampling3) |
+| Consistency | Highest - performed best in all 5 sampling techniques |
+
+Random Forest demonstrated superior and consistent performance across all sampling techniques, making it the most reliable model for this fraud detection task.
+
+### Best Sampling Technique Overall
+
+**🥇 Sampling3 (Systematic Sampling)**
+
+| Metric | Value |
+|--------|-------|
+| Average Accuracy | 93.33% |
+| Best Model Performance | 100.00% (Random Forest & SVM) |
+| Models with 90%+ | 3 out of 5 models |
+
+**🥈 Sampling2 (Stratified Sampling) - Close Second**
+
+| Metric | Value |
+|--------|-------|
+| Average Accuracy | 92.59% |
+| Best Model Performance | 100.00% (Random Forest) |
+| Models with 90%+ | 3 out of 5 models |
+
+Both Systematic and Stratified sampling techniques produced excellent results by ensuring good coverage and maintaining class balance in the samples.
+
+### Overall Best Combination
+
+**⭐ Winner:** M3 (Random Forest) + Sampling2 (Stratified) = **100.00%** accuracy
+
+
+---
 
 ## Analysis and Discussion
 
-### The Bootstrap Winner
+### Key Findings
 
-Sampling5 achieved perfect 100% accuracy across all five models. Why did bootstrap sampling dominate?
+Based on the experimental results with SMOTE-balanced dataset (200 samples):
 
-With only 18 samples in the balanced dataset and needing 17 for each sample, bootstrap sampling with replacement does something clever. It can pick the same transaction multiple times, which means:
+#### 1. Impact of Sampling Technique
 
-1. **More diversity in training:** The duplicates act like emphasis on certain patterns
-2. **Natural data augmentation:** Seeing the same sample multiple times helps models learn better
-3. **Variance reduction:** This is why Random Forest (which uses bootstrapping internally) works so well
+Different sampling techniques create different training datasets, which directly impact model performance:
 
-Think of it this way: if you're studying for an exam and you have 18 practice problems, seeing some problems twice might actually help you learn those patterns better than seeing each problem exactly once.
+- **Simple Random Sampling (Sampling1):** Provides strong baseline with 85-96% accuracy across models
+- **Stratified Sampling (Sampling2):** Excellent performer - achieved 100% accuracy with Random Forest by maintaining perfect class balance
+- **Systematic Sampling (Sampling3):** Excellent results with 100% accuracy for both Random Forest and SVM, showing good coverage of data patterns
+- **Cluster Sampling (Sampling4):** Lower performance (74-89%) - grouping similar transactions may exclude important patterns
+- **Bootstrap Sampling (Sampling5):** Solid performance (89-96%) with Random Forest, showing good variance reduction
 
-### The Systematic Surprise
+#### 2. Model-Specific Behavior
 
-Sampling3 (Systematic) got exactly 75% across all five models. Not great, not terrible - but remarkably consistent.
+**M1 (Logistic Regression):**
+- Accuracy range: 81.48% - 96.30%
+- Best with Systematic sampling (96.30%)
+- Shows moderate sensitivity to sampling technique
+- Performed well across most techniques, proving stable and reliable
 
-This makes sense because systematic sampling provides good coverage. By selecting at regular intervals, you ensure the sample is spread across the entire dataset. No model gets an advantage or disadvantage - everyone gets the same quality of data.
+**M2 (Decision Tree):**
+- Accuracy range: 74.07% - 96.30%
+- Best with Stratified sampling (96.30%)
+- Highest variance across sampling techniques (22% difference)
+- Cluster sampling showed significant drop (74.07%), indicating sensitivity to sample composition
 
-### The Stratified Failure
+**M3 (Random Forest):**
+- Accuracy range: 88.89% - 100.00%
+- **Top performer overall** - achieved 100% with both Stratified and Systematic sampling
+- Most consistent performance across all sampling techniques
+- Ensemble approach reduces variance and improves generalization
 
-Sampling2 (Stratified) performed worst. Naive Bayes even scored 0% - a complete failure.
+**M4 (SVM):**
+- Accuracy range: 88.89% - 100.00%
+- Achieved perfect 100% with Systematic sampling
+- Strong performance with Simple Random (96.30%) and Stratified (96.30%)
+- Demonstrates good robustness when given quality samples
 
-Why? With such a tiny dataset (18 samples), trying to maintain exact proportions (9:8 split) probably created an unfortunate train-test split. When you only have 3-4 test samples, getting them all from one difficult region can tank your accuracy.
+**M5 (Naive Bayes):**
+- Accuracy range: 62.96% - 81.48%
+- Lowest performer overall
+- Simple Random sampling showed poorest result (62.96%)
+- Independence assumption may not hold well for fraud detection features
+---
 
-Lesson: Stratified sampling is great for larger datasets, but with extremely small samples, it can backfire.
+## Project Structure
 
-### Model-Specific Observations
+```
+sampling-assignment/
+│
+├── main.py                    # Main implementation
+├── README.md                  # This file
+├── requirements.txt           # Python dependencies
+├── results.csv               # Generated results (after running)
+└── Creditcard_data.csv       # Downloaded dataset (after running)
+```
 
-**Decision Tree is the most robust:**
-It scored 75% or higher on every sampling technique. Trees adapt well to different data distributions.
-
-**Naive Bayes is the most fragile:**
-Range from 0% to 100%. Probabilistic models are sensitive to sample quality because they estimate probabilities from the data. Bad sample = bad probability estimates = bad predictions.
-
-**Random Forest's weird behavior:**
-You'd expect the ensemble method to be robust, but it ranged from 25% to 100%. However, it did perfect with Bootstrap (its natural habitat), which makes sense since Random Forest internally uses bootstrap sampling.
-
-**SVM and Logistic Regression:**
-Both struggled with Simple Random and Stratified sampling but excelled with Bootstrap. These models benefit from seeing repeated patterns in the data.
-
-### The Sample Size Problem
-
-Let's be real: 18 samples is tiny. With test sets of only 3-4 samples, accuracy can only be 0%, 25%, 50%, 75%, or 100%. A single misclassification drops you by 25%.
-
-This amplifies the importance of sampling technique. In normal circumstances with hundreds or thousands of samples, the differences would be smaller. But here, it's the difference between complete failure and perfect accuracy.
-
-### Practical Takeaways
-
-What did I learn from this experiment?
-
-1. **For very small datasets, use bootstrap sampling.** It consistently outperformed other techniques.
-
-2. **Don't blindly trust stratified sampling with tiny samples.** It's great in theory but can fail when you have very few data points.
-
-3. **Systematic sampling is the "safe choice"** if you want consistent, middle-of-the-road performance.
-
-4. **Model choice matters, but sampling matters more** (at least for small datasets). The same model went from 0% to 100% just by changing the sampling technique.
-
-5. **Decision Trees are your robust friend.** They performed well across different sampling strategies.
-
-## Conclusion
-
-This assignment clearly demonstrated that sampling technique selection is critical when working with small, balanced datasets.
-
-Bootstrap sampling emerged as the clear winner, achieving perfect accuracy across all models. This makes sense theoretically - bootstrap sampling's use of replacement provides better training data quality for small samples.
-
-The most surprising finding was how badly stratified sampling performed. This goes against conventional wisdom but highlights an important lesson: techniques that work well on large datasets don't always translate to very small samples.
-
-For anyone working on fraud detection or similar imbalanced problems with limited data: balance your dataset first, then use bootstrap sampling to create your training sets. Pair it with Decision Trees or Random Forest for the most robust results.
 
 ## How to Run
 
-1. Activate the virtual environment:
-```bash
-source .venv/bin/activate
-```
+### Prerequisites
 
-2. Install dependencies:
+- Python 3.8 or higher
+- pip (Python package installer)
+
+### Installation
+
+1. **Clone or download this repository**
+
+2. **Install required packages:**
+
+
+Use requirements.txt:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Run the script:
+### Configuration
+
+Open `main.py` and modify the balanced dataset size if desired:
+
+```python
+# Set target balanced dataset size
+BALANCED_DATASET_SIZE = 200  # Try 200, 400, etc.
+```
+
+### Execution
+
+Run the main script:
 ```bash
 python main.py
 ```
 
 The script will:
-- Download the dataset automatically
-- Balance it
-- Create all 5 samples
-- Train all 25 model-sample combinations
-- Print results and analysis
-- Save results to `results.csv`
+1. Download the dataset automatically from GitHub
+2. Display dataset statistics and class distribution
+3. Balance the dataset using SMOTE
+4. Create 5 samples using different techniques
+5. Train 25 model-sample combinations
+6. Display results matrix and analysis
+7. Save results to `results.csv`
 
-## Requirements
+### Output Files
 
-```
-pandas>=1.5.0
-numpy>=1.23.0
-scikit-learn>=1.2.0
-requests>=2.28.0
-```
+- `results.csv` - Accuracy matrix
 
-## Files in This Repository
-
-- `main.py` - Complete implementation
-- `requirements.txt` - Python dependencies
-- `README.md` - This file
-- `Sampling_Assignment.pdf` - Assignment instructions
-- `Creditcard_data.csv` - Dataset (downloaded automatically)
-- `results.csv` - Results matrix
 
 ---
 
-**Vani Goyal**
-**102303078**
-**UCS654 - Predictive Analytics Using Statistics**
+## Conclusion
+
+This project demonstrates that:
+
+1. **Sampling technique selection significantly impacts model performance**, especially with imbalanced datasets
+2. **Different models respond differently to sampling strategies** - there's no one-size-fits-all
+3. **SMOTE effectively handles severe class imbalance** by creating synthetic minority samples
+4. **Ensemble methods (Random Forest) are generally more robust** across sampling techniques
+
+---
+
+## References
+
+1. Scikit-learn Documentation: https://scikit-learn.org/
+2. Imbalanced-learn Documentation: https://imbalanced-learn.org/
+
