@@ -15,6 +15,8 @@
 - [Results](#results)
 - [Project Structure](#project-structure)
 - [How to Run](#how-to-run)
+- [Conclusion](#conclusion)
+- [References](#references)
 
 
 ---
@@ -377,8 +379,8 @@ For each of the **25 combinations** (5 sampling techniques × 5 models):
 
 **Configuration Used:** SMOTE with 200 balanced samples (100 fraud + 100 legitimate)
 
-|                          | Sampling1 | Sampling2 | Sampling3 | Sampling4 | Sampling5 |
-|--------------------------|-----------|-----------|-----------|-----------|-----------|
+|                          | Sampling1<br>(Simple Random) | Sampling2<br>(Stratified) | Sampling3<br>(Systematic) | Sampling4<br>(Cluster) | Sampling5<br>(Bootstrap) |
+|--------------------------|------------------------------|---------------------------|---------------------------|------------------------|--------------------------|
 | M1 (Logistic Regression) |   85.19%  |   88.89%  |   96.30%  |   81.48%  |   88.89%  |
 | M2 (Decision Tree)       |   88.89%  |   96.30%  |   92.59%  |   74.07%  |   92.59%  |
 | M3 (Random Forest)       |   96.30%  |  100.00%  |  100.00%  |   88.89%  |   96.30%  |
