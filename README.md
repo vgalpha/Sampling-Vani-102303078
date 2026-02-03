@@ -6,7 +6,39 @@
 
 ## Introduction
 
-This project explores how different sampling techniques affect machine learning model performance on imbalanced datasets. I worked with a credit card fraud detection dataset that's heavily imbalanced, balanced it, and then applied five different sampling methods. Each sample was used to train five different ML models, resulting in 25 different combinations to compare.
+### Understanding Imbalanced Datasets
+
+An imbalanced dataset is one where the distribution of classes is not equal. One class has significantly more samples than the other. For example, if you have 1000 transactions and only 10 are fraudulent, that's an imbalanced dataset with a 100:1 ratio.
+
+**Real-life examples where imbalanced datasets occur:**
+- **Fraud detection:** Most transactions are legitimate, very few are fraudulent
+- **Disease diagnosis:** Most patients are healthy, few have a specific disease
+- **Spam email filtering:** Most emails are legitimate, fewer are spam
+- **Manufacturing defects:** Most products pass quality checks, few are defective
+- **Customer churn:** Most customers stay, only a small percentage leave
+
+The problem? If you train a model on imbalanced data, it can just predict the majority class every time and still get high accuracy. A model that says "no fraud" for every transaction would be 99% accurate but completely useless.
+
+### What is Sampling?
+
+Sampling is the process of selecting a subset of data from a larger dataset. Instead of using all available data, you pick a representative sample based on some technique or strategy.
+
+**How sampling helps with imbalanced datasets:**
+- **Balancing:** You can undersample the majority class or oversample the minority class to create balance
+- **Better learning:** Models learn patterns from both classes instead of just memorizing the majority
+- **Reduced bias:** Prevents models from being biased toward predicting only the majority class
+- **Improved generalization:** Helps models perform better on real-world data where catching the minority class matters
+
+Different sampling techniques select data differently, and this selection strategy can significantly impact how well your model learns.
+
+### What This Project Does
+
+This project explores how different sampling techniques affect machine learning model performance. I worked with a credit card fraud detection dataset that's heavily imbalanced (85:1 ratio). Here's what I did:
+
+1. Balanced the dataset using undersampling
+2. Applied five different sampling techniques to create five different samples
+3. Trained five different ML models on each sample
+4. Compared all 25 combinations to see which sampling technique works best with which model
 
 The main question: Does the way we sample our data really matter? Spoiler: Yes, it matters a lot.
 
@@ -19,7 +51,7 @@ The dataset comes from a credit card transaction database with 772 records. Here
 - **Fraudulent transactions (Class 1):** 9 (1.2%)
 - **Imbalance ratio:** About 85:1
 
-The dataset has 30 features - most are labeled V1 through V28 (these are PCA-transformed features for privacy), plus Time and Amount which are the original features.
+The dataset has 30 features: V1-V28 (28 features), Time and Amount.
 
 This kind of extreme imbalance is common in fraud detection. If you train a model on this as-is, it could just predict "legitimate" for everything and still be right 98.8% of the time - but completely useless for catching fraud.
 
