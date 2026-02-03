@@ -1,6 +1,6 @@
 # Sampling Assignment - Credit Card Fraud Detection
 
-**Author:** Vanisha Gupta
+**Author:** Vani Goyal
 **Roll No:** 102303078
 **Course:** UCS654
 
@@ -371,6 +371,6 @@ Sampling-Vani-102303078/
 ---
 
 **Assignment Submitted By:**
-**Vanisha Gupta**
+**Vani Goyal**
 **Roll No: 102303078**
 **UCS654 - Predictive Analytics Using Statistics**

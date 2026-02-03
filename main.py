@@ -1,6 +1,6 @@
 """
 Sampling Assignment - Credit Card Fraud Detection
-Author: Vanisha Gupta (102303078)
+Author: Vani Goyal (102303078)
 Objective: Analyze different sampling techniques on imbalanced dataset
 """
 
